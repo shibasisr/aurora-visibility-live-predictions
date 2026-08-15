@@ -1,5 +1,11 @@
 # Aurora Visibility Prediction
 
+[![Launch location lookup](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/shibasisr/aurora-visibility-live-predictions/main?filepath=aurora_lookup.ipynb)
+[![Launch live globe](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/shibasisr/aurora-visibility-live-predictions/main?filepath=aurora_globe.ipynb)
+
+Runs the notebook live via [Binder](https://mybinder.org). First launch builds the environment (a few
+minutes); cached after that. Once open, run the notebook (Run > Run All Cells) to execute it.
+
 Live prediction of aurora visibility probability at any location, using real-time [NOAA SWPC geomagnetic
 data](https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json) rather than [OMNI2](https://spdf.gsfc.nasa.gov/pub/data/omni/low_res_omni/). OMNI2's ~2-week publication lag makes it unusable for live queries, so it's used
 only for historical training data. Trained on ~22,000 Aurorasaurus citizen-science sightings (2014-2025) [data](https://zenodo.org/records/16783265) merged with
