@@ -18,8 +18,8 @@ import requests
 from astral import Observer
 from astral.sun import elevation as sun_elevation_fn
 
-from aurora_transforms import cosine_mlon, sine_mlon  # noqa: F401 -- required for joblib unpickling
-from aurora_gated_model import GatedAuroraModel  # noqa: F401 -- required for joblib unpickling
+from aurora_transforms import cosine_mlon, sine_mlon  #-- required for joblib unpickling
+from aurora_gated_model import GatedAuroraModel  #  -- required for joblib unpickling
 from fetch_live_geomagnetic import get_live_geomagnetic_indices
 
 MODEL_PATH = Path(__file__).parent / "aurora_ebm_model_final_deployment.joblib"
@@ -62,8 +62,7 @@ def _moon_darkness(dt):
 
 def predict_aurora_probability(lat, lon, dt=None):
     """Predict P(aurora visible) at a geographic (lat, lon), for the current
-    moment (dt=None) -- forecasting ahead is not yet supported (see project
-    memory: Bz/solar-wind forecast has no validated public source)."""
+    moment (dt=None) -- forecasting ahead is not yet supported."""
     if dt is None:
         dt = datetime.datetime.now(datetime.timezone.utc)
     elif dt.tzinfo is None:

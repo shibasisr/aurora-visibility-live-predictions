@@ -11,7 +11,7 @@ trend). Two independent gates, each a smooth sigmoid weight rather than a hard c
    sparse deep-dark tail and the sparse daylight tail; the well-populated middle range
    is left to the EBM.
 
-Kept in its own module (not inline in a notebook) so joblib can pickle/unpickle it.
+Standalone module so joblib can pickle/unpickle it.
 """
 import numpy as np
 
