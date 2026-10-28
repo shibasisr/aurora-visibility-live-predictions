@@ -89,7 +89,7 @@ pip install -r requirements.txt
 jupyter notebook
 ```
 
-Run `aurora_lookup.ipynb` or `aurora_globe.ipynb` directly — both load the saved model, no retraining
+`python test_smoke.py` checks the install offline in a few seconds. Run `aurora_lookup.ipynb` or `aurora_globe.ipynb` directly — both load the saved model, no retraining
 needed. To retrain from scratch, run `aurora_final_deployment.ipynb`.
 
 ## Limitations, in short
