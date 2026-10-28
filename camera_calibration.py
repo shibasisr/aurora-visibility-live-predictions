@@ -1,25 +1,8 @@
 """
-Camera-based range for the model's probability -- a separate step applied after
-the model (aurora_ebm_model_final_deployment.joblib is unchanged).
+Camera-based range for Model 1's clear-sky probability, applied after the model.
 
-The maps are fitted in camera_calibration.ipynb and saved to
-camera_calibration_maps.json. In short: the model's latitude behaviour matches
-an all-sky camera ~7 deg magnetic latitude poleward of the observer, so an
-observer at |mlat| L is compared with clean all-sky camera labels at L + 7
-(6 THEMIS cameras at 58-63 deg, Tromso / Kiruna / Skibotn at 65-67 deg; clear,
-dark, moon-free minutes). For each camera alone the map
-sigmoid(a * logit(p) + b) is fitted; the range shown is the 25-75% spread of
-those nine maps at the model's clear-sky probability. Each map is monotone, so
-the ranking of predictions is unchanged.
-
-Why a range and not one number: the cameras disagree in level, and no single
-map beats the raw model on average across them (see the notebook).
-
-Meaning: chance that aurora a camera would detect is in your sky, including low
-on the northern horizon -- roughly an upper bound for the naked eye. Clear skies
-only (cloud_cover = 0). Camera-backed for northern observers at ~51-60 deg mlat (all the cameras are north);
-elsewhere the maps are applied without camera backing; above ~72 deg
-predictions are unreliable (Svalbard all-sky camera, AUC 0.55).
+Nine per-camera maps sigmoid(a * logit(p) + b), fitted in camera_calibration.ipynb and read from
+camera_calibration_maps.json; the range is their 25-75% spread at p. Background: CAMERA_VALIDATION.md.
 """
 import json
 from pathlib import Path

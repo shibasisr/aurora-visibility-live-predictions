@@ -110,8 +110,7 @@ def fig_sketch(t, mode):
     ax.set_xlim(-130, 1010)
     ax.set_ylim(-80, 190)
     ax.plot([-130, 1010], [0, 0], color=t["muted"], linewidth=1.5)
-    # aurora curtain above the camera
-    # a real aurora (BLM Alaska photo, public domain) in place of a drawn one
+    # aurora photo: BLM Alaska, public domain
     ax.imshow(plt.imread("figures/aurora_patch.jpg"), extent=[770, 830, 108, 150], aspect="auto", zorder=2)
     ax.text(845, 129, "aurora\n~100-110 km up", color=t["text"], fontsize=9, va="center")
     # camera looking straight up

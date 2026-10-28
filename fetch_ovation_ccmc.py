@@ -1,12 +1,8 @@
 """
-Rebuilds ovation_camera_minutes.csv.gz: OVATION Prime electron energy flux at each camera minute, from the
-runs archived by NASA CCMC (https://iswa.ccmc.gsfc.nasa.gov/iswa_data_tree/model/ionosphere/ovation_prime/e_data/).
-
-The archive has one file every 30 minutes (HH:15, HH:45) on a magnetic local time x magnetic latitude grid
-(0.25 h x 0.5 deg). Each camera minute takes the nearest file, the camera's magnetic latitude and its magnetic
-local time (aacgmv2). About 12% of the half-hours are missing from the archive; those minutes are left out.
-Downloads ~25,000 files (~4 GB) but keeps only what it needs. Needs aacgmv2 (pip install aacgmv2), which
-the notebooks don't.
+Rebuilds ovation_camera_minutes.csv.gz: OVATION Prime electron energy flux at each camera minute, from runs
+archived by NASA CCMC (https://iswa.ccmc.gsfc.nasa.gov/iswa_data_tree/model/ionosphere/ovation_prime/e_data/).
+Nearest 30-minute file, camera's mlat and magnetic local time (aacgmv2). Half-hours missing from the archive are
+left out. Downloads ~25,000 files (~4 GB).
 """
 import re
 import time

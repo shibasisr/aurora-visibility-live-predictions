@@ -1,19 +1,12 @@
 """
-GatedAuroraModel -- blends the full EBM with logistic-regression fallbacks in regions
-where the EBM's binned shape functions have too little training data to extrapolate
-reliably (they flatline past the edge of what they've seen, rather than continuing a
-trend). Two independent gates, each a smooth sigmoid weight rather than a hard cutoff:
+GatedAuroraModel: the EBM blended with logistic-regression fallbacks where its shape functions run out of
+training data. Two smooth sigmoid gates:
 
-1. oval_dist gate: trusts the EBM where `oval_dist` is well-populated (roughly higher
-   magnetic latitude), hands off to LR(oval_dist, |mlat|) in the sparse low-mlat tail.
+1. oval_dist: LR(oval_dist, |mlat|) in the sparse low-mlat tail.
+2. sun_elevation_utc: LR(sun_elevation_utc) in the sparse daylight tail. A deep-dark fallback (lr_sun_neg) is
+   optional; the deployed model has none.
 
-2. sun_elevation_utc gate: an LR(sun_elevation_utc) fallback for the sparse daylight
-   tail; the rest is left to the EBM. A deep-dark fallback is optional (lr_sun_neg) and
-   the deployed model doesn't use one: below about -18 deg the sky is fully dark, the EBM's
-   curve is flat there as it should be, and a sun-only LR would pull deep-night
-   predictions toward its own constant regardless of location.
-
-Standalone module so joblib can pickle/unpickle it.
+Own module so joblib can pickle it.
 """
 import numpy as np
 
