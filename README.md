@@ -41,7 +41,7 @@ reports). Inside the polar cap (Svalbard) it fails, so predictions above ~72° a
   <source media="(prefers-color-scheme: dark)" srcset="figures/horizon_sketch_dark.png">
   <img src="figures/horizon_sketch_light.png" alt="A person sees aurora low in the north that is overhead a camera about 800 km away" width="680">
 </picture>
-<sub><sub>Photo: BLM Alaska, public domain ([commons.wikimedia.org](https://commons.wikimedia.org/wiki/File:Northern_Lights_2023-03_(52707330654).jpg)). Height: THEMIS maps aurora at 110 km ([themis.igpp.ucla.edu](https://themis.igpp.ucla.edu/nuggets/nuggets_2021/Gabrielse_21/Gabrielse_21.html)).</sub></sub>
+<sub><sub>Photo: BLM Alaska, public domain (<a href="https://commons.wikimedia.org/wiki/File:Northern_Lights_2023-03_%2852707330654%29.jpg">commons.wikimedia.org</a>). Height: THEMIS maps aurora at 110 km (<a href="https://themis.igpp.ucla.edu/nuggets/nuggets_2021/Gabrielse_21/Gabrielse_21.html">themis.igpp.ucla.edu</a>).</sub></sub>
 
 The data agree: the gap between the model and the cameras is smallest for a camera about 7° north.
 
