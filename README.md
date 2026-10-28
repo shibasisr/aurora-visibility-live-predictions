@@ -63,8 +63,7 @@ sources agree on the physics. Full write-up: [`CAMERA_VALIDATION.md`](CAMERA_VAL
 
 **A model learned from citizen reports holds up against both the cameras and OVATION.** OVATION works
 independently, from satellite counts of the charged particles that make aurora. Against OVATION runs archived by
-[NASA CCMC](https://iswa.ccmc.gsfc.nasa.gov/iswa_data_tree/model/ionosphere/ovation_prime/) (the model behind most
-aurora apps), it ranks the same camera minutes better (median AUC 0.80 vs 0.72) and is right more often when
+[NASA CCMC](https://iswa.ccmc.gsfc.nasa.gov/iswa_data_tree/model/ionosphere/ovation_prime/), it ranks the same camera minutes better (median AUC 0.80 vs 0.72) and is right more often when
 confident (92% vs 71%). This is unfair to OVATION: its runs had only real-time solar-wind inputs (not Kp or other indices directly), which are noisier,
 while this model was scored with the final, cleaned solar-wind and Kp data available in hindsight. The gap could be
 entirely due to that ([`ovation_comparison.ipynb`](ovation_comparison.ipynb)).
