@@ -1,0 +1,59 @@
+{
+  "delta": 7,
+  "range_quantiles": [
+    0.25,
+    0.75
+  ],
+  "supported_mlat": [
+    51.0,
+    60.0
+  ],
+  "unreliable_mlat": 72.0,
+  "cameras": {
+    "chibougamau": {
+      "a": 1.15,
+      "b": -1.381,
+      "camera_mlat": 58.4
+    },
+    "kapuskasing": {
+      "a": 1.375,
+      "b": -0.662,
+      "camera_mlat": 58.6
+    },
+    "athabasca": {
+      "a": 1.418,
+      "b": -1.297,
+      "camera_mlat": 61.2
+    },
+    "the pas": {
+      "a": 1.815,
+      "b": -1.058,
+      "camera_mlat": 62.4
+    },
+    "gakona": {
+      "a": 1.96,
+      "b": -0.064,
+      "camera_mlat": 62.9
+    },
+    "whitehorse": {
+      "a": 0.992,
+      "b": 0.305,
+      "camera_mlat": 63.1
+    },
+    "kiruna": {
+      "a": 1.217,
+      "b": 1.444,
+      "camera_mlat": 65.0
+    },
+    "skibotn": {
+      "a": 1.822,
+      "b": 0.302,
+      "camera_mlat": 66.6
+    },
+    "tromso": {
+      "a": 1.424,
+      "b": -0.623,
+      "camera_mlat": 66.8
+    }
+  }
+}

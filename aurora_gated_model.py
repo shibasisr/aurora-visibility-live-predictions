@@ -7,9 +7,11 @@ trend). Two independent gates, each a smooth sigmoid weight rather than a hard c
 1. oval_dist gate: trusts the EBM where `oval_dist` is well-populated (roughly higher
    magnetic latitude), hands off to LR(oval_dist, |mlat|) in the sparse low-mlat tail.
 
-2. sun_elevation_utc gate: two-sided. Separate LR(sun_elevation_utc) fallbacks for the
-   sparse deep-dark tail and the sparse daylight tail; the well-populated middle range
-   is left to the EBM.
+2. sun_elevation_utc gate: an LR(sun_elevation_utc) fallback for the sparse daylight
+   tail; the rest is left to the EBM. A deep-dark fallback is optional (lr_sun_neg) and
+   the deployed model doesn't use one: below about -18 deg the sky is fully dark, the EBM's
+   curve is flat there as it should be, and a sun-only LR would pull deep-night
+   predictions toward its own constant regardless of location.
 
 Standalone module so joblib can pickle/unpickle it.
 """
@@ -41,7 +43,10 @@ class GatedAuroraModel:
 
     def sun_gate_weight(self, sun_elev):
         sun_elev = np.asarray(sun_elev, dtype=float)
-        w_neg = 1.0 / (1.0 + np.exp(-(sun_elev - self.sun_gate_neg_center) / self.sun_gate_neg_scale))
+        if self.lr_sun_neg is None:
+            w_neg = np.ones_like(sun_elev)
+        else:
+            w_neg = 1.0 / (1.0 + np.exp(-(sun_elev - self.sun_gate_neg_center) / self.sun_gate_neg_scale))
         w_pos = 1.0 / (1.0 + np.exp((sun_elev - self.sun_gate_pos_center) / self.sun_gate_pos_scale))
         return np.where(sun_elev < 0, w_neg, w_pos)
 
@@ -59,11 +64,9 @@ class GatedAuroraModel:
 
         se = X["sun_elevation_utc"].values
         is_neg = se < 0
-        p_lr_sun = np.where(
-            is_neg,
-            self.lr_sun_neg.predict_proba(X[["sun_elevation_utc"]])[:, 1],
-            self.lr_sun_pos.predict_proba(X[["sun_elevation_utc"]])[:, 1],
-        )
+        p_pos = self.lr_sun_pos.predict_proba(X[["sun_elevation_utc"]])[:, 1]
+        p_neg = p_pos if self.lr_sun_neg is None else self.lr_sun_neg.predict_proba(X[["sun_elevation_utc"]])[:, 1]
+        p_lr_sun = np.where(is_neg, p_neg, p_pos)
         w_sun = self.sun_gate_weight(se)
         p1 = w_sun * p1 + (1 - w_sun) * p_lr_sun
 

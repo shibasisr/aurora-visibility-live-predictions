@@ -1,36 +1,85 @@
 # Aurora Visibility Prediction
 
-[![Launch location lookup](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/shibasisr/aurora-visibility-live-predictions/main?filepath=aurora_lookup.ipynb)
-[![Launch live globe](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/shibasisr/aurora-visibility-live-predictions/main?filepath=aurora_globe.ipynb)
+Live chance of seeing aurora at any location, from real-time [NOAA SWPC](https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json)
+space weather and live cloud cover. Trained on ~22,000 Aurorasaurus citizen-science sightings (2014-2025,
+[data](https://zenodo.org/records/16783265)) merged with historical geomagnetic ([OMNI2](https://spdf.gsfc.nasa.gov/pub/data/omni/low_res_omni/))
+and weather data, and checked against all-sky cameras. A continuation of
+[summer26-aurora-visibility-predictions](https://github.com/Erdos-Projects/summer26-aurora-visibility-predictions).
+Forecasts at a 6-36 hour horizon will be available soon.
 
-Runs the notebook live via [Binder](https://mybinder.org). First launch builds the environment (a few
-minutes); cached after that. Once open, run the notebook (Run > Run All Cells) to execute it.
+Most aurora apps build on NOAA's [OVATION](https://www.swpc.noaa.gov/products/aurora-30-minute-forecast)
+forecast, which gives the chance of aurora overhead from satellite measurements, and then turn it into a
+viewing chance with rules of thumb such as NOAA's view line or a Kp table. This model instead learns the
+viewing chance directly from what people reported seeing, including aurora low on their horizon, and is
+checked against all-sky cameras.
 
-Live prediction of aurora visibility probability at any location, using real-time [NOAA SWPC geomagnetic
-data](https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json) rather than [OMNI2](https://spdf.gsfc.nasa.gov/pub/data/omni/low_res_omni/). OMNI2's ~2-week publication lag makes it unusable for live queries, so it's used
-only for historical training data. Trained on ~22,000 Aurorasaurus citizen-science sightings (2014-2025) [data](https://zenodo.org/records/16783265) merged with
-historical geomagnetic and weather data.
+**Try it** (runs in the browser via [Binder](https://mybinder.org); first launch takes a few minutes, then Run > Run All Cells):
 
-This is a continuation of the
-[summer26-aurora-visibility-predictions](https://github.com/Erdos-Projects/summer26-aurora-visibility-predictions)
-project, where the initial modelling was done. This version builds on those findings and further refines
-the predictions. Forecasts at a 6-36 hour horizon will be available soon.
+- [![Location lookup (start here)](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/shibasisr/aurora-visibility-live-predictions/main?filepath=aurora_lookup_calibrated.ipynb) location lookup with live weather (start here)
+- [![Globe](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/shibasisr/aurora-visibility-live-predictions/main?filepath=aurora_globe_calibrated.ipynb) globe, clear sky
+
+Both show the model's chance and, next to it, a camera-based range ([`MODEL.md`](MODEL.md)).
+
+## At a glance
+
+**The question.** People report aurora when they already expect it, and from where they live. Did the model
+learn aurora physics, or reporting habits? All-sky cameras answer this: they watch every dark minute from
+fixed sites. I scored the model on ~740,000 clear, dark minutes from 9 cameras in Canada, Alaska and
+Scandinavia, plus Svalbard.
+
+**1. It ranks ordinary minutes almost as well as reports** (AUC 0.70-0.87 per camera against 0.83 on
+reports). Inside the polar cap (Svalbard) it fails, so predictions above ~72° are flagged unreliable.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="figures/auc_by_camera_dark.png">
+  <img src="figures/auc_by_camera_light.png" alt="Model AUC within each all-sky camera" width="680">
+</picture>
+
+**2. People see aurora that is overhead about 7° further north**, low on their horizon.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="figures/horizon_sketch_dark.png">
+  <img src="figures/horizon_sketch_light.png" alt="A person sees aurora low in the north that is overhead a camera about 800 km away" width="680">
+</picture>
+<sub><sub>Photo: [BLM Alaska](https://commons.wikimedia.org/wiki/File:Northern_Lights_2023-03_(52707330654).jpg), public domain. Height: [THEMIS](https://themis.igpp.ucla.edu/nuggets/nuggets_2021/Gabrielse_21/Gabrielse_21.html) maps aurora at 110 km.</sub></sub>
+
+The data agree: the gap between the model and the cameras is smallest for a camera about 7° north.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="figures/shift_error_dark.png">
+  <img src="figures/shift_error_light.png" alt="Mismatch between the citizen model and the cameras, by how far north the camera is" width="680">
+</picture>
+
+**3. When it says more than 70%, there is aurora** 68-97% of the time, for a camera about 7° north
+(cameras at 61-67°; further south it is rarely this confident).
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="figures/precision_70_dark.png">
+  <img src="figures/precision_70_light.png" alt="Camera aurora rate overall vs when the model says more than 70 percent" width="680">
+</picture>
+
+A model trained only on cameras predicts citizen reports nearly as well (AUC 0.80 vs 0.83), so two independent
+sources agree on the physics. Full write-up: [`CAMERA_VALIDATION.md`](CAMERA_VALIDATION.md).
+
+**A model learned from citizen reports holds up against both the cameras and OVATION.** OVATION works
+independently, from satellite counts of the charged particles that make aurora. Against OVATION runs archived by
+[NASA CCMC](https://iswa.ccmc.gsfc.nasa.gov/iswa_data_tree/model/ionosphere/ovation_prime/) (the model behind most
+aurora apps), it ranks the same camera minutes better (median AUC 0.80 vs 0.72) and is right more often when
+confident (92% vs 71%). This is unfair to OVATION: its runs had only real-time solar-wind inputs (not Kp or other indices directly), which are noisier,
+while this model was scored with the final, cleaned solar-wind and Kp data available in hindsight. The gap could be
+entirely due to that ([`ovation_comparison.ipynb`](ovation_comparison.ipynb)).
 
 ## What's here
 
-- `predict_core.py` — core prediction function (`predict_aurora_probability(lat, lon)`). Fetches live
-  kp/Bz/solar wind from NOAA SWPC, live cloud cover from Open-Meteo, computes magnetic coordinates and
-  sun elevation/moon darkness, and runs them through the model to get a probability.
-- `aurora_lookup.ipynb` — interactive widget: takes a location (lat, lon), outputs a live probability.
-- `aurora_globe.ipynb` — interactive orthographic globe, live probability across the northern hemisphere.
-  Not reliable for southern hemisphere predictions, although the option to view them exists (see Known
-  limitations).
-- `aurora_ebm_model_final_deployment.joblib` — the trained model (see Model below).
-- `aurora_gated_model.py`, `aurora_transforms.py` — supporting classes/functions required to unpickle and
-  run the model.
-- `fetch_live_geomagnetic.py` — live NOAA SWPC data fetch.
-- `aurora_final_deployment.ipynb` — trains the model on `aurora_dataset_clean_timestart.csv` and saves
-  it to `aurora_ebm_model_final_deployment.joblib`.
+- `predict_core.py` — `predict_aurora_probability(lat, lon)`: live inputs in, probability out.
+- `aurora_lookup.ipynb`, `aurora_globe.ipynb` — location lookup and globe; `*_calibrated.ipynb` add the
+  camera-based range (`camera_calibration.py`, `predict_calibrated.py`).
+- `aurora_final_deployment.ipynb` — trains the model (`aurora_ebm_model_final_deployment.joblib`).
+- `camera_model.ipynb`, `camera_calibration.ipynb` — the camera checks and the calibration fit;
+  `make_readme_figures.py` draws the figures above.
+- `ovation_comparison.ipynb` — Model 1 against archived OVATION runs (`ovation_camera_minutes.csv.gz`, rebuilt
+  by `fetch_ovation_ccmc.py`).
+- [`MODEL.md`](MODEL.md) — the model, the calibration and known limitations.
 
 ## Setup
 
@@ -44,37 +93,12 @@ jupyter notebook
 Run `aurora_lookup.ipynb` or `aurora_globe.ipynb` directly — both load the saved model, no retraining
 needed. To retrain from scratch, run `aurora_final_deployment.ipynb`.
 
-## Model
+## Limitations, in short
 
-An Explainable Boosting Machine (EBM / GA2M, via [InterpretML](https://github.com/interpretml/interpret))
-on: magnetic latitude (mlat), kp, Bz (GSM), solar wind speed, Ap, cloud cover, moon darkness, sun elevation, and
-`oval_dist` (distance from the Feldstein-Starkov auroral oval boundary — see a simple empirical formula
-[here](https://www.spaceweather.gov/content/tips-viewing-aurora)).
+- Above ~72° magnetic latitude (polar cap) predictions are unreliable.
+- At high latitude on quiet nights the model barely responds to Kp; the citizen data lost that structure.
+- Southern-hemisphere predictions are unreliable (2.9% of training data).
+- Cloud cover is learned only weakly: most reports come from clear nights, and the historical cloud value is a
+  coarse hourly estimate. The lookup shows live cloud separately; check it before going out.
 
-EBM's shape functions flatline beyond the edge of their training data. Therefore extrapolation requires care. Two features
-have sparse regions where this caused implausible predictions (garbage high values at very low magnetic
-latitude, where the true probability should be near zero; an unphysical "recovery" at very high sun
-elevation). Both are fixed with a region-gated
-fallback: a smooth weight trusts the full EBM wherever training data is dense, and switches to a simple
-logistic regression (continuous, so it degrades to a physically consistent value instead of flatlining) only in the genuinely
-sparse tails.
-See `aurora_gated_model.py` for the implementation.
-
-## Known limitations
-
-The citizen-science data suffers from reporting bias leading to class imbalance: observations are sparse
-overall, and the concentration of observations from specific locations suggests viewing hotspots rather
-than a representative sample. Sample weights are rebalanced per magnetic-latitude band
-(`00-48`, `48-63`, `63-90`) to partially correct for this, but the model is still stretched in a couple of
-scenarios:
-
-- **Low kp (calm conditions), `mlat 63-90`**: the model essentially ignores the geomagnetic indices and
-  predicts a high viewing chance regardless. This isn't a bug — the training labels themselves are ~88%
-  positive in this regime, so the model has correctly learned the data it was given. The finer,
-  kp-dependent structure is genuinely lost, though, and can only be recovered with more negative-sighting
-  reports from this regime.
-- **Southern hemisphere**: only 2.9% of training rows (647/22,280) come from south of the equator. The
-  model's own shape function scores the extreme southern latitudes higher than anywhere in the
-  well-populated north — an artifact of that sparsity, not a real hemispheric asymmetry, since the model
-  has no feature (e.g. IMF `By`, season) that could actually capture real interhemispheric differences.
-  Southern-hemisphere predictions are correspondingly unreliable.
+Details in [`MODEL.md`](MODEL.md).
