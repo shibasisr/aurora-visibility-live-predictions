@@ -10,8 +10,7 @@ import camera_calibration
 import predict_core
 
 CALIBRATION_NOTE = (
-    "Camera-based chance, if clear, that aurora a camera would detect is in your sky, including "
-    "low on the northern horizon. An upper bound for the naked eye; your eyes may see less."
+    "Chance a camera would see aurora in your sky if clear; an upper bound for the eye."
 )
 
 
@@ -43,7 +42,6 @@ def predict_aurora_probability_calibrated(lat, lon, dt=None):
     if sup == "unreliable":
         result["low_confidence"] = True
         result["low_confidence_reason"] = (
-            "|mlat| > 72 (polar cap): predictions are unreliable -- near-chance ranking against the "
-            "Svalbard all-sky camera (AUC 0.55); aurora here is not driven by Kp the way the auroral oval is"
+            "Polar cap: the model doesn't work this far north."
         )
     return result

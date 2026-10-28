@@ -42,7 +42,7 @@ def support(mlat):
 
 # what each label means for the person looking it up (the camera that matters is ~7 deg north of them)
 SUPPORT_TEXT = {
-    "camera": "camera-backed: a camera ~7° north of you checks the model",
-    "extrapolated": "not camera-backed: no camera ~7° north of you",
-    "unreliable": "unreliable: polar cap, where the Svalbard camera shows the model fails",
+    "camera": "checked against a camera",
+    "extrapolated": "no camera check for your latitude",
+    "unreliable": "unreliable",
 }

@@ -84,9 +84,7 @@ def predict_aurora_probability(lat, lon, dt=None):
             "mlon": None,
             "low_confidence": True,
             "low_confidence_reason": (
-                "This location is too close to the geomagnetic equator for AACGM coordinates "
-                "to be computed -- aurora is not observable this close to the magnetic equator, "
-                "so the probability is reported as 0 directly rather than passed to the model."
+                "Too close to the magnetic equator to see aurora."
             ),
             "inputs": None,
             "geomagnetic_data_age_seconds": geo["data_age_seconds"],
@@ -122,8 +120,7 @@ def predict_aurora_probability(lat, lon, dt=None):
         "mlon": mlon,
         "low_confidence": low_confidence,
         "low_confidence_reason": (
-            "mlat<48 without an active G4/G5 storm (kp<7) -- "
-            "aurora unlikely, the probability estimates are unreliable"
+            "Low magnetic latitude and no major storm: aurora unlikely, estimate uncertain."
             if low_confidence else None
         ),
         "inputs": row.iloc[0].to_dict(),
